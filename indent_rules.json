@@ -1,0 +1,4 @@
+{
+    "indent_after": ["if", "for", "while", "else", "elif", "def", "class"],
+    "indent_decrease": ["return"]
+}
