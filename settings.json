@@ -1,18 +1,6 @@
 {
     "editor": {
-        "fontSize": 14,
-        "fontFamily": "Courier New, monospace",
-        "lineNumbers": "on",
-        "tabSize": 4,
-        "insertSpaces": true,
-        "wordWrap": "on",
-        "minimap": {
-            "enabled": true
-        }
-    },
-    "files": {
-        "autoSave": "afterDelay",
-        "autoSaveDelay": 1000
-    },
-    "theme": "dark"
+        "tabSize": 5,
+        "theme": "Sombre"
+    }
 }

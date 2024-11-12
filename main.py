@@ -2,19 +2,30 @@ import os
 import sys
 import json
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QTextEdit, QAction, QFileDialog, QMessageBox
+    QApplication, QMainWindow, QTextEdit, QAction, QFileDialog, QMessageBox, QDialog
 )
 from PyQt5.QtGui import QIcon, QTextCursor,QFont, QColor
 from PyQt5.QtCore import Qt
+from settings import SettingsWindow
+
 
 class IDE(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("IDE Personnalisée")
-        self.setGeometry(100, 100, 800, 600)
-
+        
         # Charger les paramètres depuis le fichier JSON
         self.settings = self.load_settings()
+        
+        # Définir la taille de l'indentation depuis les paramètres ou par défaut
+        self.tab_size = self.settings.get("editor", {}).get("tabSize", 4)
+        self.indentation = " " * self.tab_size
+        
+        # Définir l'indentation depuis les paramètres ou par défaut
+        #self.indentation = " " * self.settings.get("editor", {}).get("tabSize", 4)
+        #self.tab_size = self.settings.get("editor", {}).get("tabSize", 4)
+        
+        # Initialiser l'interface utilisateur
+        self.initUI()
 
         # Définir l'indentation depuis les paramètres ou par défaut
         indentation = self.settings.get("editor", {}).get("tabSize", 4)
@@ -27,6 +38,45 @@ class IDE(QMainWindow):
 
         # Appel de la méthode pour créer la barre de menu
         self._create_menu_bar()
+    def initUI(self):
+        self.setWindowTitle("IDE Personnalisée")
+        self.setGeometry(100, 100, 800, 600)
+
+        # Create menu bar
+        menubar = self.menuBar()
+        settings_menu = menubar.addMenu("Paramètres")
+
+        # Add settings action
+        settings_action = QAction("Ouvrir les paramètres", self)
+        #settings_action.setShortcut("Ctrl+P")
+        settings_action.triggered.connect(self.open_settings)
+        settings_menu.addAction(settings_action)
+        
+        # Zone d'édition de texte avec les paramètres personnalisés
+        self.text_edit = QTextEdit(self)
+        self.text_edit.setTabStopDistance(self.tab_size * 8)  # Assuming 8 pixels per space
+        self.setCentralWidget(self.text_edit)
+
+    #def open_settings(self):
+    #    self.settings_window = SettingsWindow(self)
+    #    self.settings_window.show()
+    #def open_settings(self):
+    #    self.settings_window = SettingsWindow(self)
+    #    if self.settings_window.exec_() == QDialog.Accepted:
+    #        self.settings = self.load_settings()
+    #        self.tab_size = self.settings.get("editor", {}).get("tabSize", 4)
+    #        self.indentation = " " * self.tab_size
+    #        self.text_edit.setTabStopDistance(self.tab_size * 8)  # Assuming 8 pixels per space
+    def open_settings(self):
+        self.settings_window = SettingsWindow(self)
+        if self.settings_window.exec_() == QDialog.Accepted:
+            self.reload_settings()
+
+    def reload_settings(self):
+        self.settings = self.load_settings()
+        self.tab_size = self.settings.get("editor", {}).get("tabSize", 4)
+        self.indentation = " " * self.tab_size
+        self.text_edit.setTabStopDistance(self.tab_size * 8)  # Assuming 8 pixels per space
 
     def load_settings(self):
         try:
